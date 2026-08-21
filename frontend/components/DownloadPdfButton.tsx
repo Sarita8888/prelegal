@@ -7,10 +7,12 @@ import { NdaFormData, isFormComplete } from "@/lib/types";
 
 export function DownloadPdfButton({ data }: { data: NdaFormData }) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState(false);
   const complete = isFormComplete(data);
 
   async function handleDownload() {
     setIsGenerating(true);
+    setError(false);
     try {
       const blob = await pdf(<NdaPdfDocument data={data} />).toBlob();
       const url = URL.createObjectURL(blob);
@@ -24,6 +26,8 @@ export function DownloadPdfButton({ data }: { data: NdaFormData }) {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+    } catch {
+      setError(true);
     } finally {
       setIsGenerating(false);
     }
@@ -42,6 +46,11 @@ export function DownloadPdfButton({ data }: { data: NdaFormData }) {
       {!complete && (
         <p className="mt-2 text-xs text-slate-500">
           Fill in all required fields (*) to enable download.
+        </p>
+      )}
+      {error && (
+        <p className="mt-2 text-xs text-red-600">
+          Something went wrong generating the PDF. Please try again.
         </p>
       )}
     </div>

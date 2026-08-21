@@ -3,8 +3,6 @@ import {
   ContentPart,
   STANDARD_TERMS_ATTRIBUTION,
   STANDARD_TERMS_SECTIONS,
-  formatConfidentialityTerm,
-  formatMndaTerm,
   resolveCoverPageValues,
   tokenize,
 } from "@/lib/ndaContent";
@@ -92,10 +90,10 @@ export function NdaPdfDocument({ data }: { data: NdaFormData }) {
         <Text style={styles.fieldValue}>{refValues.effectiveDate}</Text>
 
         <Text style={styles.fieldLabel}>MNDA Term</Text>
-        <Text style={styles.fieldValue}>{formatMndaTerm(data)}</Text>
+        <Text style={styles.fieldValue}>{refValues.mndaTerm}</Text>
 
         <Text style={styles.fieldLabel}>Term of Confidentiality</Text>
-        <Text style={styles.fieldValue}>{formatConfidentialityTerm(data)}</Text>
+        <Text style={styles.fieldValue}>{refValues.confidentialityTerm}</Text>
 
         <Text style={styles.fieldLabel}>Governing Law</Text>
         <Text style={styles.fieldValue}>{refValues.governingLaw}</Text>
