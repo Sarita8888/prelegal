@@ -2,8 +2,6 @@ import {
   STANDARD_TERMS_ATTRIBUTION,
   STANDARD_TERMS_SECTIONS,
   formatDisplayDate,
-  formatConfidentialityTerm,
-  formatMndaTerm,
   resolveCoverPageValues,
 } from "@/lib/ndaContent";
 import { NdaFormData } from "@/lib/types";
@@ -35,14 +33,14 @@ export function NdaPreview({ data }: { data: NdaFormData }) {
         <CoverField label="Effective Date">{refValues.effectiveDate}</CoverField>
 
         <CoverField label="MNDA Term" hint="The length of this MNDA">
-          {formatMndaTerm(data)}
+          {refValues.mndaTerm}
         </CoverField>
 
         <CoverField
           label="Term of Confidentiality"
           hint="How long Confidential Information is protected"
         >
-          {formatConfidentialityTerm(data)}
+          {refValues.confidentialityTerm}
         </CoverField>
 
         <CoverField label="Governing Law">{refValues.governingLaw}</CoverField>
@@ -124,7 +122,7 @@ function CoverField({
     <div className="mb-3">
       <div className="text-sm font-medium text-slate-700">{label}</div>
       {hint && <div className="text-xs text-slate-400">{hint}</div>}
-      <div className="mt-0.5 rounded bg-amber-50 px-2 py-1 text-sm text-slate-900">
+      <div className="mt-0.5 whitespace-pre-wrap rounded bg-amber-50 px-2 py-1 text-sm text-slate-900">
         {children}
       </div>
     </div>
