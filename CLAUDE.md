@@ -82,3 +82,8 @@ Backend available at http://localhost:8000
 - `POST /api/auth/signin` - Stub, returns 501
 - `POST /api/auth/signout` - Stub, returns 501
 - `GET /api/auth/me` - Stub, returns 501
+
+### Local dev notes
+- PA-4 is merged to `main` (2026-08-26).
+- The Dockerfile's runtime command must pass `--frozen --no-dev` to `uv run` — without it, `uv run` re-resolves and downloads dev dependencies (pytest, httpx, etc.) from the network on every container start, delaying the server coming up.
+- On Windows, `http://localhost:8000` can occasionally hit a Docker Desktop IPv6 loopback forwarding issue (connection accepts but `ERR_EMPTY_RESPONSE`/no data ever arrives). If that happens, use `http://127.0.0.1:8000` instead, or restart Docker Desktop to reset its port forwarding.
