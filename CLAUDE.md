@@ -8,7 +8,7 @@ The available documents are covered in the catalog.json file in the project root
 
 @catalog.json
 
-The current implementation is a Mutual NDA creator prototype (manual form, no AI chat yet) running on a FastAPI + statically-exported-Next.js foundation. See "Implementation Status" below for what is actually built versus planned.
+The current implementation is a Mutual NDA creator with a freeform AI chat interface (no manual form) running on a FastAPI + statically-exported-Next.js foundation. See "Implementation Status" below for what is actually built versus planned.
 
 ## Development process
 
@@ -93,5 +93,6 @@ Backend available at http://localhost:8000
 
 ### Local dev notes
 - PA-4 is merged to `main` (2026-08-26).
+- PA-5 is merged to `main` (2026-08-26).
 - The Dockerfile's runtime command must pass `--frozen --no-dev` to `uv run` — without it, `uv run` re-resolves and downloads dev dependencies (pytest, httpx, etc.) from the network on every container start, delaying the server coming up.
 - On Windows, `http://localhost:8000` can occasionally hit a Docker Desktop IPv6 loopback forwarding issue (connection accepts but `ERR_EMPTY_RESPONSE`/no data ever arrives). If that happens, use `http://127.0.0.1:8000` instead, or restart Docker Desktop to reset its port forwarding.
