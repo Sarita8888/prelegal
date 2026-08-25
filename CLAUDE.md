@@ -69,9 +69,16 @@ Backend available at http://localhost:8000
 - `GET /api/health` health check
 - No frontend UI changes — the NDA creator looks and behaves exactly as in PA-3; nothing in the frontend calls the backend yet
 
+### Completed (PA-5)
+- AI chat interface for the Mutual NDA (still just the one document type — the other 10 in catalog.json remain unbuilt): the manual form (`NdaForm.tsx`) is removed and replaced by a freeform chat (`frontend/components/ChatPanel.tsx`) that asks the user about the deal and its fields
+- New `POST /api/chat` endpoint (`backend/app/routers/chat.py`, `backend/app/nda_chat.py`): one LiteLLM/OpenRouter/Cerebras Structured Outputs call per turn (per the `cerebras` skill), returning a conversational reply plus the complete current best-known value of every NDA field (nulls for anything not yet known) and an `is_complete` flag
+- Stateless by design: no chat/message persistence table. The frontend keeps the message history and confirmed fields in React state and resends the full history each turn; nothing survives a page refresh
+- The frontend only sends fields the chat has actually confirmed to the backend (kept separate from the form's own UI default values like "fixed 1-year term"), so the assistant still asks about term structure instead of assuming the user already chose the defaults
+- `docker-compose.yml` now passes `OPENROUTER_API_KEY` into the container via `env_file: .env`; `backend/app/config.py` also exports it into `os.environ` itself (pydantic-settings' `env_file` only populates the `Settings` object, it doesn't touch `os.environ`, and litellm reads the key straight from the environment) so local non-Docker `uv run` dev works too
+- CORS added to the backend (`localhost:3000`/`127.0.0.1:3000` only) so `next dev` can call the FastAPI backend directly during local frontend development
+
 ### Planned (not yet built)
 - Functional auth: real password hashing (bcrypt), sessions/JWT in an HttpOnly cookie
-- AI chat interface for NDA creation (LiteLLM via OpenRouter, Cerebras inference, `gpt-oss-120b`, Structured Outputs — see the `cerebras` skill)
 - Support for the remaining 10 document types from catalog.json
 - Document persistence (save/load/delete) and a "My Documents" UI
 - Auth-aware frontend (login/signup UI, user menu, protected document endpoints)
@@ -82,6 +89,7 @@ Backend available at http://localhost:8000
 - `POST /api/auth/signin` - Stub, returns 501
 - `POST /api/auth/signout` - Stub, returns 501
 - `GET /api/auth/me` - Stub, returns 501
+- `POST /api/chat` - Freeform AI chat for the Mutual NDA; returns `{reply, fields, is_complete}`
 
 ### Local dev notes
 - PA-4 is merged to `main` (2026-08-26).
