@@ -38,8 +38,21 @@ async function selectMutualNda(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByText("Mutual Non-Disclosure Agreement"));
 }
 
+function mockFetchWithRoutes(
+  handlers: Record<string, () => { ok: boolean; json: () => Promise<unknown> }>,
+) {
+  return vi.fn((url: string) => {
+    const path = url.toString();
+    for (const [suffix, handler] of Object.entries(handlers)) {
+      if (path.endsWith(suffix)) return Promise.resolve(handler());
+    }
+    throw new Error(`Unhandled fetch in test: ${path}`);
+  });
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
+  window.localStorage.clear();
 });
 
 describe("Home page", () => {
@@ -144,5 +157,127 @@ describe("Home page", () => {
     await user.click(screen.getByRole("button", { name: /Choose a different document/ }));
 
     await waitFor(() => expect(screen.getByText("What would you like to create?")).toBeInTheDocument());
+  });
+});
+
+describe("Auth and My Documents", () => {
+  it("lets a user sign up from the header, then sign out", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetchWithRoutes({
+        "/api/catalog": () => ({ ok: true, json: () => Promise.resolve(CATALOG) }),
+        "/api/auth/signup": () => ({
+          ok: true,
+          json: () =>
+            Promise.resolve({ token: "abc", user: { id: 1, email: "new@example.com", created_at: "now" } }),
+        }),
+      }),
+    );
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await user.click(screen.getByRole("button", { name: "Sign up" }));
+    await user.type(screen.getByLabelText("Email"), "new@example.com");
+    await user.type(screen.getByLabelText("Password"), "secret123");
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+
+    await waitFor(() => expect(screen.getByText("new@example.com")).toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Sign out" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument());
+  });
+
+  it("saves a completed document to My Documents and lists it there", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetchWithRoutes({
+        "/api/catalog": () => ({ ok: true, json: () => Promise.resolve(CATALOG) }),
+        "/api/auth/signup": () => ({
+          ok: true,
+          json: () =>
+            Promise.resolve({ token: "abc", user: { id: 1, email: "new@example.com", created_at: "now" } }),
+        }),
+        "/api/chat": () => ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              reply: "You're all set.",
+              fields: {
+                party1Name: "Acme, Inc.",
+                party2Name: "Beta Corp.",
+                purpose: "Evaluating a business relationship.",
+                effectiveDate: "2026-08-26",
+                governingLaw: "Delaware",
+                jurisdiction: "New Castle, DE",
+              },
+              is_complete: true,
+              suggested_document_type: null,
+            }),
+        }),
+        "/api/documents": () => ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 1,
+              document_type: "mutual-nda",
+              document_name: "Mutual Non-Disclosure Agreement",
+              fields: {},
+              created_at: "2026-08-26 10:00:00",
+            }),
+        }),
+      }),
+    );
+
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await user.click(screen.getByRole("button", { name: "Sign up" }));
+    await user.type(screen.getByLabelText("Email"), "new@example.com");
+    await user.type(screen.getByLabelText("Password"), "secret123");
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await waitFor(() => expect(screen.getByText("new@example.com")).toBeInTheDocument());
+
+    await selectMutualNda(user);
+    await user.type(screen.getByLabelText(/Your message/), "Here are all the details.");
+    await user.click(screen.getByRole("button", { name: /Send/ }));
+
+    const saveButton = await screen.findByRole("button", { name: "Save to My Documents" });
+    await user.click(saveButton);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Saved ✓" })).toBeInTheDocument());
+  });
+
+  it("prompts a signed-out user to sign in instead of showing a save button", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetchWithRoutes({
+        "/api/catalog": () => ({ ok: true, json: () => Promise.resolve(CATALOG) }),
+        "/api/chat": () => ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              reply: "You're all set.",
+              fields: {
+                party1Name: "Acme, Inc.",
+                party2Name: "Beta Corp.",
+                purpose: "Evaluating a business relationship.",
+                effectiveDate: "2026-08-26",
+                governingLaw: "Delaware",
+                jurisdiction: "New Castle, DE",
+              },
+              is_complete: true,
+              suggested_document_type: null,
+            }),
+        }),
+      }),
+    );
+
+    const user = userEvent.setup();
+    render(<Home />);
+    await selectMutualNda(user);
+    await user.type(screen.getByLabelText(/Your message/), "Here are all the details.");
+    await user.click(screen.getByRole("button", { name: /Send/ }));
+
+    expect(await screen.findByText("Sign in to save this document")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Save to My Documents" })).not.toBeInTheDocument();
   });
 });

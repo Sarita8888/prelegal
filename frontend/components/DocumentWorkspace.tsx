@@ -7,6 +7,8 @@ import { DownloadPdfButton } from "@/components/DownloadPdfButton";
 import { DocumentPreview } from "@/components/documents/DocumentPreview";
 import { DocumentDownloadButton } from "@/components/DocumentDownloadButton";
 import { fetchCatalog, uniqueByDocumentType } from "@/lib/catalog";
+import { useAuth } from "@/lib/AuthContext";
+import { saveDocument } from "@/lib/documents";
 import { DEFAULT_FORM_DATA, NdaFormData } from "@/lib/types";
 
 export function DocumentWorkspace({
@@ -14,16 +16,20 @@ export function DocumentWorkspace({
   documentName,
   onSwitchDocumentType,
   onBackToPicker,
+  onRequestSignIn,
 }: {
   documentType: string;
   documentName: string;
   onSwitchDocumentType: (documentType: string, documentName: string) => void;
   onBackToPicker: () => void;
+  onRequestSignIn: () => void;
 }) {
+  const { token } = useAuth();
   const [chatFields, setChatFields] = useState<Record<string, string | null | undefined>>({});
   const [isComplete, setIsComplete] = useState(false);
   const [suggestedDocumentType, setSuggestedDocumentType] = useState<string | null>(null);
   const [documentNamesByType, setDocumentNamesByType] = useState<Record<string, string>>({});
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   useEffect(() => {
     fetchCatalog()
@@ -47,15 +53,31 @@ export function DocumentWorkspace({
     setSuggestedDocumentType(null);
   }, [documentType]);
 
+  // Once fields change again after a save, the saved snapshot is stale.
+  useEffect(() => {
+    setSaveState("idle");
+  }, [chatFields]);
+
   function handleFieldsChange(patch: Record<string, string>) {
     setChatFields((prev) => ({ ...prev, ...patch }));
+  }
+
+  async function handleSave() {
+    if (!token) return;
+    setSaveState("saving");
+    try {
+      await saveDocument(token, documentType, chatFields);
+      setSaveState("saved");
+    } catch {
+      setSaveState("error");
+    }
   }
 
   const isNda = documentType === "mutual-nda";
   const ndaData: NdaFormData = { ...DEFAULT_FORM_DATA, ...(chatFields as Partial<NdaFormData>) };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="flex-1 bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-6">
           <div>
@@ -117,7 +139,7 @@ export function DocumentWorkspace({
               onSuggestedDocumentType={setSuggestedDocumentType}
             />
           </div>
-          <div className="mt-4 mb-8">
+          <div className="mt-4 mb-8 flex flex-wrap items-center gap-3">
             {isNda ? (
               <DownloadPdfButton data={ndaData} isComplete={isComplete} />
             ) : (
@@ -127,6 +149,32 @@ export function DocumentWorkspace({
                 data={chatFields}
                 isComplete={isComplete}
               />
+            )}
+            {isComplete &&
+              (token ? (
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={saveState === "saving"}
+                  className="rounded-md border border-brand-purple px-4 py-2 text-sm font-medium text-brand-purple hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {saveState === "saving"
+                    ? "Saving…"
+                    : saveState === "saved"
+                      ? "Saved ✓"
+                      : "Save to My Documents"}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onRequestSignIn}
+                  className="text-sm font-medium text-brand-blue hover:underline"
+                >
+                  Sign in to save this document
+                </button>
+              ))}
+            {saveState === "error" && (
+              <p className="text-xs text-red-600">Couldn&apos;t save. Please try again.</p>
             )}
           </div>
         </div>

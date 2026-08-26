@@ -19,6 +19,24 @@ class UserOut(BaseModel):
     created_at: str
 
 
+class AuthResponse(BaseModel):
+    token: str
+    user: UserOut
+
+
+class SaveDocumentRequest(BaseModel):
+    document_type: str
+    fields: dict[str, str | None] = {}
+
+
+class DocumentOut(BaseModel):
+    id: int
+    document_type: str
+    document_name: str
+    fields: dict[str, str | None]
+    created_at: str
+
+
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant"]
     content: str

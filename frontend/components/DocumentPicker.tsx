@@ -18,7 +18,7 @@ export function DocumentPicker({
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="flex-1 bg-slate-50">
       <div className="mx-auto max-w-3xl px-6 py-12">
         <h1 className="text-xl font-semibold text-[#032147]">What would you like to create?</h1>
         <p className="mt-1 text-sm text-slate-500">

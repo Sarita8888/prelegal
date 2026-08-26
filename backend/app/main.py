@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.db import init_db
-from app.routers import auth, catalog, chat, health
+from app.routers import auth, catalog, chat, documents, health
 
 
 @asynccontextmanager
@@ -33,6 +33,7 @@ app.include_router(health.router, prefix="/api")
 app.include_router(auth.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(catalog.router, prefix="/api")
+app.include_router(documents.router, prefix="/api")
 
 # Mounted last so it never shadows the /api/* routes above.
 if settings.static_dir.exists():

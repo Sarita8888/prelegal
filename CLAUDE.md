@@ -87,26 +87,39 @@ Backend available at http://localhost:8000
 - Fixed two bugs while doing this: (1) the chat input now regains focus after every reply or error (`ChatPanel.tsx`); (2) the backend's `is_complete` flag — previously computed but silently discarded by the frontend, which recomputed its own separate NDA-only `REQUIRED_FIELDS` check instead — is now the sole source of truth for Download-button gating, lifted into `DocumentWorkspace` state. The structured-output schema also gained an `askedFollowUp: bool` self-report; if a document isn't complete and the reply doesn't look like it asked a question, `chat_engine.run_chat_turn` deterministically appends a fallback question naming the first missing required field (no extra LLM call).
 - CORS (`backend/app/main.py`) now also allows an `allow_origin_regex` for `https://frontend*-sara-ab48.vercel.app` in addition to the existing `localhost:3000`/`127.0.0.1:3000` allowlist — needed because the frontend and backend are deployed as two separate Vercel projects (not same-origin like the Docker setup), so the browser was rejecting the frontend's calls to the backend on Vercel previews/production. See "Deployment note" under Local dev notes below.
 
+### Completed (PA-7)
+- **Real auth**: `POST /api/auth/signup` and `/signin` now hash passwords with `bcrypt` and issue a stateless JWT (`pyjwt`, HS256, `backend/app/security.py`); `GET /api/auth/me` decodes the `Authorization: Bearer <token>` header via a `get_current_user` FastAPI dependency; `POST /api/auth/signout` is a no-op 204 (nothing to invalidate server-side for a stateless JWT). `Settings.jwt_secret` defaults to a fresh random secret generated per process start (`secrets.token_hex(32)`) rather than a checked-in default — safe because the `users` table is wiped on every restart anyway (see PA-4), so old tokens can't outlive the users they belong to.
+- Chose a bearer-token-in-`localStorage` model over an HttpOnly cookie session specifically because the frontend is a static export that can run cross-origin from the backend (the Vercel split from PA-6) — cookies would need `SameSite=None; Secure` plus `allow_credentials=True` CORS wiring for every current and future Vercel preview origin, which is materially more fragile than a bearer token the frontend already attaches manually.
+- **Document persistence**: a new `documents` table (`user_id`, `document_type`, `document_name`, `fields_json`, `created_at`) is created alongside `users` in `init_db()` — wiped on restart like everything else, per the ticket's explicit allowance for a temporary database. New `backend/app/routers/documents.py`: `POST /api/documents` (validates `fields` against the same per-document-type Pydantic model `chat.py` uses, derives `document_name` server-side via `registry.display_name` rather than trusting the client), `GET /api/documents` (current user's documents, newest first), `GET /api/documents/{id}` (404s for another user's document — rows are scoped by `user_id` in the query, not just filtered after fetch).
+- **Frontend auth**: `frontend/lib/AuthContext.tsx` (React Context, since the app has no other global state) hydrates from `localStorage` on mount and exposes `signIn`/`signUp`/`signOut`; `components/auth/AuthScreen.tsx` is one component parameterized by `mode: "signin" | "signup"` rather than two near-duplicate screens.
+- **My Documents**: a "Save to My Documents" button appears next to the Download PDF button once a document is `is_complete` (explicit save, not autosave — user controls when a snapshot is written); signed-out users see a "Sign in to save this document" prompt instead. `components/MyDocuments.tsx` lists saved documents; `components/SavedDocumentView.tsx` reopens one read-only, reusing the same NDA-bespoke-vs-generic branch `DocumentWorkspace` uses (`NdaPreview`/`DownloadPdfButton` vs. `DocumentPreview`/`DocumentDownloadButton`) so the PDF output is identical to what a live chat session would have produced.
+- **Routing stays single-page**: signin/signup/documents are additional states in the existing `useState<Screen>` union in `app/page.tsx` (extended, not replaced) rather than new `app/` static routes, consistent with the PA-3–PA-6 pattern of one client-driven page. `AuthProvider` wraps the page content itself (not `layout.tsx`), so `Home` stays a single self-contained, directly-testable component.
+- **Polish**: a shared `Header` (logo, New Document / My Documents nav, user menu) and `Footer` (legal disclaimer: AI-drafted documents are not legal advice and need attorney review) now wrap every screen via `app/layout.tsx`. The CLAUDE.md brand palette is wired into Tailwind as theme tokens (`bg-brand-purple`, `text-brand-navy`, etc. in `app/globals.css`'s `@theme inline` block) and used in all new components; pre-existing screens (`DocumentPicker`, `ChatPanel`, `DocumentWorkspace`) were left on their existing hardcoded-hex classes rather than migrated, to keep this change scoped.
+- Not done: Docker image wasn't rebuilt/run end-to-end for this change (Docker Desktop wasn't available in the dev environment) — `next build`, `tsc`, and the full pytest/vitest suites all pass, but the containerized run should be smoke-tested before deploying. Deleting a saved document isn't implemented (the ticket only asked to look back at prior documents).
+
 ### Planned (not yet built)
-- Functional auth: real password hashing (bcrypt), sessions/JWT in an HttpOnly cookie
-- Document persistence (save/load/delete) and a "My Documents" UI
-- Auth-aware frontend (login/signup UI, user menu, protected document endpoints)
+- Persistent (non-ephemeral) document storage and auth surviving a real server restart — out of scope per the ticket, which explicitly allows a temporary database
+- Deleting a saved document
 - Repeatable sub-records as real lists (PSA's multiple SOWs, DPA's multiple subprocessors) instead of single flat fields
 - Real cross-document linking for addendum-style documents (AI Addendum, BAA, DPA) instead of a free-text parent-agreement description
 
 ### Current API Endpoints
 - `GET /api/health` - Health check
-- `POST /api/auth/signup` - Stub, returns 501
-- `POST /api/auth/signin` - Stub, returns 501
-- `POST /api/auth/signout` - Stub, returns 501
-- `GET /api/auth/me` - Stub, returns 501
+- `POST /api/auth/signup` - Creates a user, returns `{token, user}` (409 on duplicate email)
+- `POST /api/auth/signin` - Returns `{token, user}` for correct credentials (401 otherwise)
+- `POST /api/auth/signout` - 204, no-op (JWTs are stateless; the client just discards the token)
+- `GET /api/auth/me` - Returns the current user for a valid `Authorization: Bearer <token>` header (401 otherwise)
 - `GET /api/catalog` - Lists the 12 catalog entries / 11 document types
 - `POST /api/chat` - Freeform AI chat for any of the 11 document types; body is `{document_type, messages, fields}`, returns `{reply, fields, is_complete, suggested_document_type}`
+- `POST /api/documents` - Saves a document for the current user; body is `{document_type, fields}`, returns the saved `DocumentOut` (requires auth)
+- `GET /api/documents` - Lists the current user's saved documents, newest first (requires auth)
+- `GET /api/documents/{id}` - Returns one saved document if it belongs to the current user, else 404 (requires auth)
 
 ### Local dev notes
 - PA-4 is merged to `main` (2026-08-26).
 - PA-5 is merged to `main` (2026-08-26).
 - PA-6 is merged to `main` (2026-08-26), via PR #8 (`pa-6-all-document-types`).
+- PA-7 (this change) adds `bcrypt` and `pyjwt` as backend dependencies (`backend/pyproject.toml`/`uv.lock`) — no new frontend dependencies were needed.
 - The Dockerfile's runtime command must pass `--frozen --no-dev` to `uv run` — without it, `uv run` re-resolves and downloads dev dependencies (pytest, httpx, etc.) from the network on every container start, delaying the server coming up.
 - The Dockerfile also now `COPY`s `catalog.json` and `field-schemas.json` into the image (`/app/catalog.json`, `/app/field-schemas.json`) with matching `CATALOG_PATH`/`FIELD_SCHEMAS_PATH` env vars — these weren't copied in before PA-6 since nothing server-side read them.
 - On Windows, `http://localhost:8000` can occasionally hit a Docker Desktop IPv6 loopback forwarding issue (connection accepts but `ERR_EMPTY_RESPONSE`/no data ever arrives). If that happens, use `http://127.0.0.1:8000` instead, or restart Docker Desktop to reset its port forwarding.
