@@ -17,6 +17,19 @@ def test_init_db_creates_users_table():
         connection.close()
 
 
+def test_init_db_creates_documents_table():
+    init_db()
+
+    connection = sqlite3.connect(settings.db_path)
+    try:
+        cursor = connection.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='documents'"
+        )
+        assert cursor.fetchone() is not None
+    finally:
+        connection.close()
+
+
 def test_init_db_wipes_existing_data():
     init_db()
     connection = sqlite3.connect(settings.db_path)

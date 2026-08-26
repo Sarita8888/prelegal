@@ -1,6 +1,8 @@
 import os
+import secrets
 from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +16,14 @@ class Settings(BaseSettings):
     openrouter_api_key: str = ""
     catalog_path: Path = Path("../catalog.json")
     field_schemas_path: Path = Path("../field-schemas.json")
+
+    # No default is checked in: the database (and therefore every user/session)
+    # is wiped on every process start anyway (see db.init_db), so a fresh
+    # random secret per process start is fine and avoids a hardcoded default
+    # sitting in source. Set JWT_SECRET explicitly only if sessions need to
+    # survive an in-place server restart without a DB wipe.
+    jwt_secret: str = Field(default_factory=lambda: secrets.token_hex(32))
+    jwt_expires_minutes: int = 60 * 24 * 7
 
 
 settings = Settings()
