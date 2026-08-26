@@ -27,15 +27,3 @@ export const DEFAULT_FORM_DATA: NdaFormData = {
   modifications: "",
 };
 
-export const REQUIRED_FIELDS: (keyof NdaFormData)[] = [
-  "party1Name",
-  "party2Name",
-  "purpose",
-  "effectiveDate",
-  "governingLaw",
-  "jurisdiction",
-];
-
-export function isFormComplete(data: NdaFormData): boolean {
-  return REQUIRED_FIELDS.every((field) => data[field].trim().length > 0);
-}

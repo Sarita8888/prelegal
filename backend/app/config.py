@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     db_path: Path = Path("./data/app.db")
     static_dir: Path = Path("./static")
     openrouter_api_key: str = ""
+    catalog_path: Path = Path("../catalog.json")
+    field_schemas_path: Path = Path("../field-schemas.json")
 
 
 settings = Settings()

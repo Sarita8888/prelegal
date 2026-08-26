@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated from ../field-schemas.json and ../templates/*.md — see scripts/build-templates.mjs
+/lib/documents/generated/

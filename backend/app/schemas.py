@@ -24,36 +24,14 @@ class ChatMessage(BaseModel):
     content: str
 
 
-class NdaFields(BaseModel):
-    """Mirrors frontend NdaFormData field-for-field (including its camelCase
-    names) so the JSON contract needs no translation on either side."""
-
-    party1Name: str | None = None
-    party2Name: str | None = None
-    purpose: str | None = None
-    effectiveDate: str | None = None
-    mndaTermType: Literal["fixed", "ongoing"] | None = None
-    mndaTermYears: str | None = None
-    confidentialityTermType: Literal["fixed", "perpetual"] | None = None
-    confidentialityTermYears: str | None = None
-    governingLaw: str | None = None
-    jurisdiction: str | None = None
-    modifications: str | None = None
-
-
 class ChatRequest(BaseModel):
+    document_type: str
     messages: list[ChatMessage]
-    fields: NdaFields
-
-
-class ChatTurn(BaseModel):
-    """Structured-output schema the LLM call is constrained to."""
-
-    reply: str
-    fields: NdaFields
+    fields: dict[str, str | None] = {}
 
 
 class ChatResponse(BaseModel):
     reply: str
-    fields: NdaFields
+    fields: dict[str, str | None]
     is_complete: bool
+    suggested_document_type: str | None = None
