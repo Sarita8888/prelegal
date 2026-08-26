@@ -16,9 +16,13 @@ COPY backend/app ./app
 RUN uv sync --frozen --no-dev
 
 COPY --from=frontend-build /app/out ./static
+COPY catalog.json ./catalog.json
+COPY field-schemas.json ./field-schemas.json
 
 ENV DB_PATH=/data/app.db
 ENV STATIC_DIR=/app/static
+ENV CATALOG_PATH=/app/catalog.json
+ENV FIELD_SCHEMAS_PATH=/app/field-schemas.json
 EXPOSE 8000
 
 CMD ["uv", "run", "--frozen", "--no-dev", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import { pdf } from "@react-pdf/renderer";
-import { NdaPdfDocument } from "./NdaPdfDocument";
-import { NdaFormData } from "@/lib/types";
+import { DocumentPdfDocument } from "./documents/DocumentPdfDocument";
 
-export function DownloadPdfButton({
+export function DocumentDownloadButton({
+  documentType,
+  documentName,
   data,
   isComplete,
 }: {
-  data: NdaFormData;
+  documentType: string;
+  documentName: string;
+  data: Record<string, string | null | undefined>;
   isComplete: boolean;
 }) {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -19,14 +22,13 @@ export function DownloadPdfButton({
     setIsGenerating(true);
     setError(false);
     try {
-      const blob = await pdf(<NdaPdfDocument data={data} />).toBlob();
+      const blob = await pdf(
+        <DocumentPdfDocument documentType={documentType} documentName={documentName} data={data} />,
+      ).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      const parties = [data.party1Name, data.party2Name]
-        .filter(Boolean)
-        .join("-and-");
       link.href = url;
-      link.download = `Mutual-NDA${parties ? `-${parties}` : ""}.pdf`;
+      link.download = `${documentName.replace(/\s+/g, "-")}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

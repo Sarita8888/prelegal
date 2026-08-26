@@ -1,5 +1,3 @@
-import { NdaFormData } from "./types";
-
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
@@ -7,8 +5,9 @@ export interface ChatMessage {
 
 export interface ChatResult {
   reply: string;
-  fields: Partial<NdaFormData>;
+  fields: Record<string, string>;
   isComplete: boolean;
+  suggestedDocumentType: string | null;
 }
 
 export class ChatRequestError extends Error {}
@@ -16,15 +15,16 @@ export class ChatRequestError extends Error {}
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 export async function sendChatMessage(
+  documentType: string,
   messages: ChatMessage[],
-  fields: Partial<NdaFormData>,
+  fields: Record<string, string | null | undefined>,
 ): Promise<ChatResult> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE_URL}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages, fields }),
+      body: JSON.stringify({ document_type: documentType, messages, fields }),
     });
   } catch {
     throw new ChatRequestError(
@@ -43,17 +43,18 @@ export async function sendChatMessage(
     reply: body.reply,
     fields: withoutNullValues(body.fields),
     isComplete: body.is_complete,
+    suggestedDocumentType: body.suggested_document_type ?? null,
   };
 }
 
 function withoutNullValues(
   fields: Record<string, string | null>,
-): Partial<NdaFormData> {
+): Record<string, string> {
   const result: Record<string, string> = {};
   for (const [key, value] of Object.entries(fields)) {
     if (value !== null && value !== undefined) {
       result[key] = value;
     }
   }
-  return result as Partial<NdaFormData>;
+  return result;
 }

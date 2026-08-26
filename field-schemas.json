@@ -1,0 +1,203 @@
+{
+  "mutual-nda": {
+    "templateFiles": ["templates/Mutual-NDA-coverpage.md", "templates/Mutual-NDA.md"],
+    "fields": [
+      { "key": "party1Name", "label": "Party 1", "kind": "text", "required": true, "promptHint": "The legal/company name of the first party." },
+      { "key": "party2Name", "label": "Party 2", "kind": "text", "required": true, "promptHint": "The legal/company name of the second party." },
+      { "key": "purpose", "label": "Purpose", "kind": "text", "required": true, "promptHint": "How the confidential information may be used (default suggestion if the user has none in mind: \"Evaluating whether to enter into a business relationship with the other party.\")." },
+      { "key": "effectiveDate", "label": "Effective Date", "kind": "text", "required": true, "promptHint": "The MNDA's effective date, formatted as YYYY-MM-DD." },
+      { "key": "mndaTermType", "label": "MNDA Term", "kind": "enum", "options": ["fixed", "ongoing"], "required": false, "promptHint": "\"fixed\" (expires N years from the effective date) or \"ongoing\" (continues until terminated)." },
+      { "key": "mndaTermYears", "label": "MNDA Term Years", "kind": "text", "required": false, "promptHint": "If mndaTermType is \"fixed\", a whole number of years as a string, e.g. \"1\"." },
+      { "key": "confidentialityTermType", "label": "Term of Confidentiality", "kind": "enum", "options": ["fixed", "perpetual"], "required": false, "promptHint": "\"fixed\" (protected for N years from the effective date) or \"perpetual\"." },
+      { "key": "confidentialityTermYears", "label": "Confidentiality Term Years", "kind": "text", "required": false, "promptHint": "If confidentialityTermType is \"fixed\", a whole number of years as a string." },
+      { "key": "governingLaw", "label": "Governing Law", "kind": "text", "required": true, "promptHint": "The US state whose law governs the agreement." },
+      { "key": "jurisdiction", "label": "Jurisdiction", "kind": "text", "required": true, "promptHint": "The city/county and state where disputes are litigated." },
+      { "key": "modifications", "label": "MNDA Modifications", "kind": "text", "required": false, "promptHint": "Optional free-text list of modifications to the standard terms; leave null if none." }
+    ]
+  },
+  "ai-addendum": {
+    "templateFiles": ["templates/AI-Addendum.md"],
+    "fields": [
+      { "key": "customerName", "label": "Customer", "kind": "text", "required": true, "promptHint": "The legal/company name of the customer." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The legal/company name of the provider." },
+      { "key": "parentAgreementDescription", "label": "Agreement", "kind": "text", "required": true, "promptHint": "The name/description of the underlying product agreement this AI Addendum supplements, e.g. \"the Cloud Service Agreement dated Jan 1, 2026 between Acme and Beta\"." },
+      { "key": "trainingData", "label": "Training Data", "kind": "text", "required": false, "promptHint": "What data Provider may use to train models, if Provider is allowed to train at all. Leave blank if Provider may not train on Customer's data." },
+      { "key": "trainingPurposes", "label": "Training Purposes", "kind": "text", "required": false, "promptHint": "The permitted purposes for training, if training is allowed." },
+      { "key": "trainingRestrictions", "label": "Training Restrictions", "kind": "text", "required": false, "promptHint": "Any restrictions on how Training Data may be used, if training is allowed." },
+      { "key": "improvementRestrictions", "label": "Improvement Restrictions", "kind": "text", "required": false, "promptHint": "Any restrictions on using Input/Output to improve the AI System outside of formal training." }
+    ]
+  },
+  "baa": {
+    "templateFiles": ["templates/BAA.md"],
+    "fields": [
+      { "key": "companyName", "label": "Company", "kind": "text", "required": true, "promptHint": "The covered entity's legal/company name." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The business associate's legal/company name." },
+      { "key": "parentAgreementDescription", "label": "Agreement", "kind": "text", "required": true, "promptHint": "The name/description of the underlying agreement between the parties (e.g. a Cloud Service Agreement) that this BAA supplements." },
+      { "key": "baaEffectiveDate", "label": "BAA Effective Date", "kind": "text", "required": true, "promptHint": "The BAA's effective date, formatted as YYYY-MM-DD." },
+      { "key": "breachNotificationPeriod", "label": "Breach Notification Period", "kind": "text", "required": true, "promptHint": "How long Provider has to report a breach to Company, e.g. \"10 business days\"." },
+      { "key": "limitations", "label": "Limitations", "kind": "text", "required": false, "promptHint": "Any restrictions on Provider offshoring, de-identifying, or aggregating PHI; leave blank for none." }
+    ]
+  },
+  "csa": {
+    "templateFiles": ["templates/CSA.md"],
+    "fields": [
+      { "key": "customerName", "label": "Customer", "kind": "text", "required": true, "promptHint": "The customer's legal/company name." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The provider's legal/company name." },
+      { "key": "effectiveDate", "label": "Effective Date", "kind": "text", "required": true, "promptHint": "The Framework Terms' effective date, formatted as YYYY-MM-DD." },
+      { "key": "orderDate", "label": "Order Date", "kind": "text", "required": true, "promptHint": "The date the Order Form starts, formatted as YYYY-MM-DD." },
+      { "key": "subscriptionPeriod", "label": "Subscription Period", "kind": "text", "required": true, "promptHint": "Length of the subscription term, e.g. \"12 months\"." },
+      { "key": "nonRenewalNoticeDate", "label": "Non-Renewal Notice Date", "kind": "text", "required": true, "promptHint": "How far before renewal either party must give notice not to renew, e.g. \"30 days before the end of the Subscription Period\"." },
+      { "key": "technicalSupport", "label": "Technical Support", "kind": "text", "required": false, "promptHint": "Description of the support Provider will give, if any." },
+      { "key": "useLimitations", "label": "Use Limitations", "kind": "text", "required": false, "promptHint": "Any limits on how Customer may use the Product, if any." },
+      { "key": "paymentProcess", "label": "Payment Process", "kind": "text", "required": true, "promptHint": "How and when Customer pays, e.g. \"Invoiced monthly in advance, due within 30 days\"." },
+      { "key": "additionalWarranties", "label": "Additional Warranties", "kind": "text", "required": false, "promptHint": "Any extra warranties beyond the standard mutual representations, if any." },
+      { "key": "generalCapAmount", "label": "General Cap Amount", "kind": "text", "required": true, "promptHint": "The general liability cap, e.g. \"the fees paid in the 12 months before the claim\"." },
+      { "key": "increasedClaims", "label": "Increased Claims", "kind": "text", "required": false, "promptHint": "Which claim types get the higher liability cap, if any." },
+      { "key": "increasedCapAmount", "label": "Increased Cap Amount", "kind": "text", "required": false, "promptHint": "The higher liability cap for Increased Claims, if any." },
+      { "key": "unlimitedClaims", "label": "Unlimited Claims", "kind": "text", "required": false, "promptHint": "Which claim types are excluded from any liability cap, if any." },
+      { "key": "providerCoveredClaims", "label": "Provider Covered Claim", "kind": "text", "required": true, "promptHint": "Claims Provider will indemnify Customer against." },
+      { "key": "customerCoveredClaims", "label": "Customer Covered Claim", "kind": "text", "required": true, "promptHint": "Claims Customer will indemnify Provider against." },
+      { "key": "governingLaw", "label": "Governing Law", "kind": "text", "required": true, "promptHint": "The state/jurisdiction whose law governs the agreement." },
+      { "key": "chosenCourts", "label": "Chosen Courts", "kind": "text", "required": true, "promptHint": "Where disputes are litigated." },
+      { "key": "dpaReference", "label": "DPA", "kind": "text", "required": false, "promptHint": "Description of any linked Data Processing Agreement between the parties, if applicable." }
+    ]
+  },
+  "dpa": {
+    "templateFiles": ["templates/DPA.md"],
+    "fields": [
+      { "key": "customerName", "label": "Customer", "kind": "text", "required": true, "promptHint": "The customer's legal/company name." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The provider's legal/company name." },
+      { "key": "parentAgreementDescription", "label": "Agreement", "kind": "text", "required": true, "promptHint": "The name/description of the underlying agreement this DPA supplements." },
+      { "key": "categoriesOfPersonalData", "label": "Categories of Personal Data", "kind": "text", "required": true, "promptHint": "The types of personal data processed, e.g. \"name, email address, account activity\"." },
+      { "key": "categoriesOfDataSubjects", "label": "Categories of Data Subjects", "kind": "text", "required": true, "promptHint": "Who the personal data is about, e.g. \"Customer's employees and end users\"." },
+      { "key": "specialCategoryData", "label": "Special Category Data", "kind": "text", "required": false, "promptHint": "Any special category/sensitive personal data processed, if applicable; leave blank if none." },
+      { "key": "specialCategoryDataRestrictionsOrSafeguards", "label": "Special Category Data Restrictions or Safeguards", "kind": "text", "required": false, "promptHint": "Any restrictions/safeguards for special category data, if applicable." },
+      { "key": "frequencyOfTransfer", "label": "Frequency of Transfer", "kind": "text", "required": true, "promptHint": "How often personal data is transferred, e.g. \"Continuous\"." },
+      { "key": "natureAndPurposeOfProcessing", "label": "Nature and Purpose of Processing", "kind": "text", "required": true, "promptHint": "Why and how the personal data is processed." },
+      { "key": "durationOfProcessing", "label": "Duration of Processing", "kind": "text", "required": true, "promptHint": "How long the processing continues, e.g. \"For the term of the Agreement\"." },
+      { "key": "approvedSubprocessors", "label": "Approved Subprocessors", "kind": "text", "required": false, "promptHint": "The list of approved subprocessors as free text, one per line if more than one, formatted as \"Name (Country) – Task\", e.g. \"Acme Hosting Inc. (Ireland) – cloud infrastructure hosting\". Leave blank if none." },
+      { "key": "governingMemberState", "label": "Governing Member State", "kind": "text", "required": true, "promptHint": "The EU member state whose law governs the EEA Standard Contractual Clauses, e.g. \"Ireland\"." },
+      { "key": "securityPolicy", "label": "Security Policy", "kind": "text", "required": false, "promptHint": "Link or description of Provider's security policy/certifications, if any." },
+      { "key": "providerSecurityContact", "label": "Provider Security Contact", "kind": "text", "required": true, "promptHint": "Email or contact for security-related inquiries to Provider." }
+    ]
+  },
+  "design-partner-agreement": {
+    "templateFiles": ["templates/Design-Partner-Agreement.md"],
+    "fields": [
+      { "key": "partnerName", "label": "Partner", "kind": "text", "required": true, "promptHint": "The design partner's legal/company name." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The provider's legal/company name." },
+      { "key": "term", "label": "Term", "kind": "text", "required": true, "promptHint": "Length of the design partnership, e.g. \"6 months\"." },
+      { "key": "program", "label": "Program", "kind": "text", "required": true, "promptHint": "Description of the design partner program and what Partner will get/do." },
+      { "key": "fees", "label": "Fees", "kind": "text", "required": false, "promptHint": "Any fees Partner pays, if applicable; leave blank if free." },
+      { "key": "effectiveDate", "label": "Effective Date", "kind": "text", "required": true, "promptHint": "The agreement's effective date, formatted as YYYY-MM-DD." },
+      { "key": "governingLaw", "label": "Governing Law", "kind": "text", "required": true, "promptHint": "The state/jurisdiction whose law governs the agreement." },
+      { "key": "chosenCourts", "label": "Chosen Courts", "kind": "text", "required": true, "promptHint": "Where disputes are litigated." },
+      { "key": "noticeAddress", "label": "Notice Address", "kind": "text", "required": true, "promptHint": "Email or mailing address for legal notices." }
+    ]
+  },
+  "partnership-agreement": {
+    "templateFiles": ["templates/Partnership-Agreement.md"],
+    "fields": [
+      { "key": "companyName", "label": "Company", "kind": "text", "required": true, "promptHint": "The company's legal/company name." },
+      { "key": "partnerName", "label": "Partner", "kind": "text", "required": true, "promptHint": "The partner's legal/company name." },
+      { "key": "obligations", "label": "Obligations", "kind": "text", "required": true, "promptHint": "Each party's obligations under the partnership, described together." },
+      { "key": "effectiveDate", "label": "Effective Date", "kind": "text", "required": true, "promptHint": "The agreement's effective date, formatted as YYYY-MM-DD." },
+      { "key": "endDate", "label": "End Date", "kind": "text", "required": true, "promptHint": "When the partnership ends, formatted as YYYY-MM-DD." },
+      { "key": "paymentProcess", "label": "Payment Process", "kind": "text", "required": false, "promptHint": "How fees are billed/invoiced, if any." },
+      { "key": "paymentSchedule", "label": "Payment Schedule", "kind": "text", "required": false, "promptHint": "When fees are paid, if any." },
+      { "key": "territory", "label": "Territory", "kind": "text", "required": false, "promptHint": "Geographic territory for the trademark license, if applicable." },
+      { "key": "brandGuidelines", "label": "Brand Guidelines", "kind": "text", "required": false, "promptHint": "Link/description of brand guidelines for using the Licensor's marks, if any." },
+      { "key": "additionalWarranties", "label": "Additional Warranties", "kind": "text", "required": false, "promptHint": "Any extra warranties beyond the standard mutual representations, if any." },
+      { "key": "generalCapAmount", "label": "General Cap Amount", "kind": "text", "required": true, "promptHint": "The general liability cap." },
+      { "key": "increasedClaims", "label": "Increased Claims", "kind": "text", "required": false, "promptHint": "Which claim types get the higher liability cap, if any." },
+      { "key": "increasedCapAmount", "label": "Increased Cap Amount", "kind": "text", "required": false, "promptHint": "The higher liability cap for Increased Claims, if any." },
+      { "key": "unlimitedClaims", "label": "Unlimited Claims", "kind": "text", "required": false, "promptHint": "Which claim types are excluded from any liability cap, if any." },
+      { "key": "companyCoveredClaims", "label": "Company Covered Claim", "kind": "text", "required": true, "promptHint": "Claims Company will indemnify Partner against." },
+      { "key": "partnerCoveredClaims", "label": "Partner Covered Claim", "kind": "text", "required": true, "promptHint": "Claims Partner will indemnify Company against." },
+      { "key": "governingLaw", "label": "Governing Law", "kind": "text", "required": true, "promptHint": "The state/jurisdiction whose law governs the agreement." },
+      { "key": "chosenCourts", "label": "Chosen Courts", "kind": "text", "required": true, "promptHint": "Where disputes are litigated." },
+      { "key": "dpaReference", "label": "DPA", "kind": "text", "required": false, "promptHint": "Description of any linked Data Processing Agreement between the parties, if applicable." }
+    ]
+  },
+  "pilot-agreement": {
+    "templateFiles": ["templates/Pilot-Agreement.md"],
+    "fields": [
+      { "key": "customerName", "label": "Customer", "kind": "text", "required": true, "promptHint": "The customer's legal/company name." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The provider's legal/company name." },
+      { "key": "pilotPeriod", "label": "Pilot Period", "kind": "text", "required": true, "promptHint": "Length of the pilot, e.g. \"90 days\"." },
+      { "key": "effectiveDate", "label": "Effective Date", "kind": "text", "required": true, "promptHint": "The agreement's effective date, formatted as YYYY-MM-DD." },
+      { "key": "noticeAddress", "label": "Notice Address", "kind": "text", "required": true, "promptHint": "Email or mailing address for legal notices." },
+      { "key": "generalCapAmount", "label": "General Cap Amount", "kind": "text", "required": true, "promptHint": "The general liability cap." },
+      { "key": "governingLaw", "label": "Governing Law", "kind": "text", "required": true, "promptHint": "The state/jurisdiction whose law governs the agreement." },
+      { "key": "chosenCourts", "label": "Chosen Courts", "kind": "text", "required": true, "promptHint": "Where disputes are litigated." }
+    ]
+  },
+  "psa": {
+    "templateFiles": ["templates/PSA.md"],
+    "fields": [
+      { "key": "customerName", "label": "Customer", "kind": "text", "required": true, "promptHint": "The customer's legal/company name." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The provider's legal/company name." },
+      { "key": "customerPolicies", "label": "Customer Policies", "kind": "text", "required": false, "promptHint": "Any Customer policies Provider must comply with, if any." },
+      { "key": "customerObligations", "label": "Customer Obligations", "kind": "text", "required": false, "promptHint": "Any obligations Customer has to support the engagement, if any." },
+      { "key": "deliverables", "label": "Deliverable", "kind": "text", "required": true, "promptHint": "Description of the deliverables for this Statement of Work, if any." },
+      { "key": "rejectionPeriod", "label": "Rejection Period", "kind": "text", "required": false, "promptHint": "How long Customer has to reject a Deliverable, e.g. \"10 days\"." },
+      { "key": "resubmissionPeriod", "label": "Resubmission Period", "kind": "text", "required": false, "promptHint": "How long Provider has to correct and resubmit a rejected Deliverable." },
+      { "key": "timeOfAssignment", "label": "Time of Assignment", "kind": "text", "required": false, "promptHint": "When IP in the Deliverables transfers to Customer, e.g. \"upon full payment\"." },
+      { "key": "fees", "label": "Fees", "kind": "text", "required": true, "promptHint": "Fees for this Statement of Work." },
+      { "key": "paymentPeriod", "label": "Payment Period", "kind": "text", "required": true, "promptHint": "How long Customer has to pay an invoice, e.g. \"30 days\"." },
+      { "key": "effectiveDate", "label": "Effective Date", "kind": "text", "required": true, "promptHint": "The agreement's effective date, formatted as YYYY-MM-DD." },
+      { "key": "sowTerm", "label": "SOW Term", "kind": "text", "required": true, "promptHint": "Length of this Statement of Work." },
+      { "key": "additionalWarranties", "label": "Additional Warranties", "kind": "text", "required": false, "promptHint": "Any extra warranties beyond the standard mutual representations, if any." },
+      { "key": "generalCapAmount", "label": "General Cap Amount", "kind": "text", "required": true, "promptHint": "The general liability cap." },
+      { "key": "increasedClaims", "label": "Increased Claims", "kind": "text", "required": false, "promptHint": "Which claim types get the higher liability cap, if any." },
+      { "key": "increasedCapAmount", "label": "Increased Cap Amount", "kind": "text", "required": false, "promptHint": "The higher liability cap for Increased Claims, if any." },
+      { "key": "unlimitedClaims", "label": "Unlimited Claims", "kind": "text", "required": false, "promptHint": "Which claim types are excluded from any liability cap, if any." },
+      { "key": "providerCoveredClaims", "label": "Provider Covered Claim", "kind": "text", "required": true, "promptHint": "Claims Provider will indemnify Customer against." },
+      { "key": "customerCoveredClaims", "label": "Customer Covered Claim", "kind": "text", "required": true, "promptHint": "Claims Customer will indemnify Provider against." },
+      { "key": "insuranceMinimums", "label": "Insurance Minimums", "kind": "text", "required": false, "promptHint": "Any required insurance coverage minimums, if any." },
+      { "key": "governingLaw", "label": "Governing Law", "kind": "text", "required": true, "promptHint": "The state/jurisdiction whose law governs the agreement." },
+      { "key": "chosenCourts", "label": "Chosen Courts", "kind": "text", "required": true, "promptHint": "Where disputes are litigated." },
+      { "key": "securityPolicy", "label": "Security Policy", "kind": "text", "required": false, "promptHint": "Link or description of Provider's security policy, if any." },
+      { "key": "dpaReference", "label": "DPA", "kind": "text", "required": false, "promptHint": "Description of any linked Data Processing Agreement between the parties, if applicable." }
+    ]
+  },
+  "sla": {
+    "templateFiles": ["templates/SLA.md"],
+    "fields": [
+      { "key": "customerName", "label": "Customer", "kind": "text", "required": true, "promptHint": "The customer's legal/company name." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The provider's legal/company name." },
+      { "key": "subscriptionPeriod", "label": "Subscription Period", "kind": "text", "required": true, "promptHint": "Length of the subscription term this SLA applies to, e.g. \"12 months\"." },
+      { "key": "targetUptime", "label": "Target Uptime", "kind": "text", "required": false, "promptHint": "Uptime commitment, e.g. \"99.9% per month\"; leave blank if there's no uptime SLA." },
+      { "key": "targetResponseTime", "label": "Target Response Time", "kind": "text", "required": false, "promptHint": "Support response time commitment, e.g. \"4 business hours\"." },
+      { "key": "supportChannel", "label": "Support Channel", "kind": "text", "required": false, "promptHint": "How Customer submits support requests, e.g. \"email to support@...\"." },
+      { "key": "uptimeCredit", "label": "Uptime Credit", "kind": "text", "required": false, "promptHint": "Service credit for missing Target Uptime, e.g. \"5% of monthly fees per 1% below target\"." },
+      { "key": "responseTimeCredit", "label": "Response Time Credit", "kind": "text", "required": false, "promptHint": "Service credit for missing Target Response Time." },
+      { "key": "scheduledDowntime", "label": "Scheduled Downtime", "kind": "text", "required": false, "promptHint": "Planned maintenance windows excluded from downtime calculations." }
+    ]
+  },
+  "software-license-agreement": {
+    "templateFiles": ["templates/Software-License-Agreement.md"],
+    "fields": [
+      { "key": "customerName", "label": "Customer", "kind": "text", "required": true, "promptHint": "The customer's legal/company name." },
+      { "key": "providerName", "label": "Provider", "kind": "text", "required": true, "promptHint": "The provider's legal/company name." },
+      { "key": "effectiveDate", "label": "Effective Date", "kind": "text", "required": true, "promptHint": "The Framework Terms' effective date, formatted as YYYY-MM-DD." },
+      { "key": "orderDate", "label": "Order Date", "kind": "text", "required": true, "promptHint": "The date the Order Form starts, formatted as YYYY-MM-DD." },
+      { "key": "subscriptionPeriod", "label": "Subscription Period", "kind": "text", "required": true, "promptHint": "Length of the subscription term, e.g. \"12 months\"." },
+      { "key": "nonRenewalNoticeDate", "label": "Non-Renewal Notice Date", "kind": "text", "required": true, "promptHint": "How far before renewal either party must give notice not to renew." },
+      { "key": "permittedUses", "label": "Permitted Uses", "kind": "text", "required": true, "promptHint": "What Customer is licensed to use the software for." },
+      { "key": "licenseLimits", "label": "License Limits", "kind": "text", "required": false, "promptHint": "Any usage limits, e.g. number of seats/servers, if any." },
+      { "key": "deletionProcedure", "label": "Deletion Procedure", "kind": "text", "required": false, "promptHint": "How Customer must uninstall/delete the software after termination, if specified." },
+      { "key": "warrantyPeriod", "label": "Warranty Period", "kind": "text", "required": true, "promptHint": "How long Provider warrants the software will conform to the Documentation, e.g. \"90 days\"." },
+      { "key": "paymentProcess", "label": "Payment Process", "kind": "text", "required": true, "promptHint": "How and when Customer pays." },
+      { "key": "additionalWarranties", "label": "Additional Warranties", "kind": "text", "required": false, "promptHint": "Any extra warranties beyond the standard mutual representations, if any." },
+      { "key": "generalCapAmount", "label": "General Cap Amount", "kind": "text", "required": true, "promptHint": "The general liability cap." },
+      { "key": "increasedClaims", "label": "Increased Claims", "kind": "text", "required": false, "promptHint": "Which claim types get the higher liability cap, if any." },
+      { "key": "increasedCapAmount", "label": "Increased Cap Amount", "kind": "text", "required": false, "promptHint": "The higher liability cap for Increased Claims, if any." },
+      { "key": "unlimitedClaims", "label": "Unlimited Claims", "kind": "text", "required": false, "promptHint": "Which claim types are excluded from any liability cap, if any." },
+      { "key": "providerCoveredClaims", "label": "Provider Covered Claim", "kind": "text", "required": true, "promptHint": "Claims Provider will indemnify Customer against." },
+      { "key": "customerCoveredClaims", "label": "Customer Covered Claim", "kind": "text", "required": true, "promptHint": "Claims Customer will indemnify Provider against." },
+      { "key": "governingLaw", "label": "Governing Law", "kind": "text", "required": true, "promptHint": "The state/jurisdiction whose law governs the agreement." },
+      { "key": "chosenCourts", "label": "Chosen Courts", "kind": "text", "required": true, "promptHint": "Where disputes are litigated." }
+    ]
+  }
+}

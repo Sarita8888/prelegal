@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build:templates": "node scripts/build-templates.mjs",
+    "predev": "npm run build:templates",
+    "prebuild": "npm run build:templates",
+    "pretest": "npm run build:templates",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

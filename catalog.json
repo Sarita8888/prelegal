@@ -2,61 +2,73 @@
   {
     "name": "Mutual Non-Disclosure Agreement",
     "description": "Standard mutual NDA terms allowing two parties to exchange confidential information for purposes such as evaluating a potential business relationship.",
-    "filename": "templates/Mutual-NDA.md"
+    "filename": "templates/Mutual-NDA.md",
+    "documentType": "mutual-nda"
   },
   {
     "name": "Mutual Non-Disclosure Agreement Cover Page",
     "description": "Signature cover page that incorporates the Mutual NDA Standard Terms by reference and captures deal-specific variables such as purpose, term, and governing law.",
-    "filename": "templates/Mutual-NDA-coverpage.md"
+    "filename": "templates/Mutual-NDA-coverpage.md",
+    "documentType": "mutual-nda"
   },
   {
     "name": "Cloud Service Agreement",
     "description": "Standard terms for selling and buying cloud software/SaaS products, covering access and use, support, payment, term and termination, warranties, liability, indemnification, and confidentiality.",
-    "filename": "templates/CSA.md"
+    "filename": "templates/CSA.md",
+    "documentType": "csa"
   },
   {
     "name": "Design Partner Agreement",
     "description": "Agreement for giving an early customer access to a product in exchange for feedback and participation in a design partner program, prior to a full commercial agreement.",
-    "filename": "templates/Design-Partner-Agreement.md"
+    "filename": "templates/Design-Partner-Agreement.md",
+    "documentType": "design-partner-agreement"
   },
   {
     "name": "Service Level Agreement",
     "description": "Standard terms defining uptime and support response time targets, service credit remedies, and termination rights for underperformance, designed to be used alongside the Cloud Service Agreement.",
-    "filename": "templates/SLA.md"
+    "filename": "templates/SLA.md",
+    "documentType": "sla"
   },
   {
     "name": "Professional Services Agreement",
     "description": "Standard terms for providing professional services under one or more statements of work, covering deliverables, intellectual property, payment, warranties, liability, and confidentiality.",
-    "filename": "templates/PSA.md"
+    "filename": "templates/PSA.md",
+    "documentType": "psa"
   },
   {
     "name": "Data Processing Agreement",
     "description": "Standard terms governing the processing of personal data between a controller/processor and processor/subprocessor, including international data transfer mechanisms (EEA SCCs and UK Addendum) and security incident response.",
-    "filename": "templates/DPA.md"
+    "filename": "templates/DPA.md",
+    "documentType": "dpa"
   },
   {
     "name": "Software License Agreement",
     "description": "Standard terms for licensing on-premise or installed software, covering license grant, restrictions, updates, open source software, warranties, liability, and confidentiality.",
-    "filename": "templates/Software-License-Agreement.md"
+    "filename": "templates/Software-License-Agreement.md",
+    "documentType": "software-license-agreement"
   },
   {
     "name": "Partnership Agreement",
     "description": "Standard terms for a business partnership involving mutual obligations, optional fees, and a trademark/brand license between the parties.",
-    "filename": "templates/Partnership-Agreement.md"
+    "filename": "templates/Partnership-Agreement.md",
+    "documentType": "partnership-agreement"
   },
   {
     "name": "Pilot Agreement",
     "description": "Standard terms for a short-term trial or evaluation of a product before committing to a longer-term commercial agreement, with a more limited scope than a full commercial contract.",
-    "filename": "templates/Pilot-Agreement.md"
+    "filename": "templates/Pilot-Agreement.md",
+    "documentType": "pilot-agreement"
   },
   {
     "name": "Business Associate Agreement",
     "description": "Standard HIPAA business associate terms governing the use and disclosure of protected health information (PHI) between a covered entity/company and a business associate/provider.",
-    "filename": "templates/BAA.md"
+    "filename": "templates/BAA.md",
+    "documentType": "baa"
   },
   {
     "name": "AI Addendum",
     "description": "Standard addendum supplementing a product agreement with terms specific to AI/ML features, covering use of AI services, model training restrictions, ownership of inputs and outputs, and AI-specific disclaimers.",
-    "filename": "templates/AI-Addendum.md"
+    "filename": "templates/AI-Addendum.md",
+    "documentType": "ai-addendum"
   }
 ]

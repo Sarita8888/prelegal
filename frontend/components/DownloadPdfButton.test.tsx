@@ -18,16 +18,16 @@ describe("DownloadPdfButton", () => {
     toBlob.mockReset();
   });
 
-  it("is disabled and shows a hint when required fields are missing", () => {
-    render(<DownloadPdfButton data={makeFormData()} />);
+  it("is disabled and shows a hint when isComplete is false", () => {
+    render(<DownloadPdfButton data={makeFormData()} isComplete={false} />);
     expect(screen.getByRole("button", { name: /Download PDF/ })).toBeDisabled();
     expect(
       screen.getByText(/Fill in all required fields/),
     ).toBeInTheDocument();
   });
 
-  it("is enabled and shows no hint when the form is complete", () => {
-    render(<DownloadPdfButton data={makeCompleteFormData()} />);
+  it("is enabled and shows no hint when isComplete is true", () => {
+    render(<DownloadPdfButton data={makeCompleteFormData()} isComplete={true} />);
     expect(screen.getByRole("button", { name: /Download PDF/ })).toBeEnabled();
     expect(
       screen.queryByText(/Fill in all required fields/),
@@ -53,6 +53,7 @@ describe("DownloadPdfButton", () => {
     render(
       <DownloadPdfButton
         data={makeCompleteFormData({ party1Name: "Acme, Inc.", party2Name: "Beta Corp." })}
+        isComplete={true}
       />,
     );
 
@@ -67,14 +68,8 @@ describe("DownloadPdfButton", () => {
     expect(revokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
   });
 
-  it("stays disabled and never generates a PDF when party names are blank", () => {
-    // party1Name/party2Name are required fields, so the button can never be
-    // clicked with blank party names through the real UI.
-    render(
-      <DownloadPdfButton
-        data={makeCompleteFormData({ party1Name: "", party2Name: "" })}
-      />,
-    );
+  it("stays disabled and never generates a PDF when isComplete is false", () => {
+    render(<DownloadPdfButton data={makeCompleteFormData({ party1Name: "", party2Name: "" })} isComplete={false} />);
     const button = screen.getByRole("button", { name: /Download PDF/ });
     expect(button).toBeDisabled();
 
@@ -94,7 +89,7 @@ describe("DownloadPdfButton", () => {
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
-    render(<DownloadPdfButton data={makeCompleteFormData()} />);
+    render(<DownloadPdfButton data={makeCompleteFormData()} isComplete={true} />);
     fireEvent.click(screen.getByRole("button", { name: /Download PDF/ }));
 
     expect(
@@ -111,7 +106,7 @@ describe("DownloadPdfButton", () => {
   it("shows an error message and re-enables the button if PDF generation fails", async () => {
     toBlob.mockRejectedValue(new Error("rendering failed"));
 
-    render(<DownloadPdfButton data={makeCompleteFormData()} />);
+    render(<DownloadPdfButton data={makeCompleteFormData()} isComplete={true} />);
     fireEvent.click(screen.getByRole("button", { name: /Download PDF/ }));
 
     expect(
@@ -127,7 +122,7 @@ describe("DownloadPdfButton", () => {
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
-    render(<DownloadPdfButton data={makeCompleteFormData()} />);
+    render(<DownloadPdfButton data={makeCompleteFormData()} isComplete={true} />);
     const button = screen.getByRole("button", { name: /Download PDF/ });
 
     fireEvent.click(button);

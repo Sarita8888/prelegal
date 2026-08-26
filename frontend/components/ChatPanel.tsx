@@ -1,34 +1,54 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { ChatMessage, sendChatMessage } from "@/lib/chat";
-import { NdaFormData } from "@/lib/types";
 
-const INITIAL_MESSAGE: ChatMessage = {
-  role: "assistant",
-  content:
-    "Hi! I'll help you put together a Mutual NDA. Let's start with the basics — " +
-    "what are the names of the two parties, and what's the purpose of this agreement?",
-};
+function article(name: string): string {
+  return /^[aeiou]/i.test(name) ? "an" : "a";
+}
 
 export function ChatPanel({
+  documentType,
+  documentName,
   knownFields,
   onFieldsChange,
+  onCompleteChange,
+  onSuggestedDocumentType,
 }: {
-  knownFields: Partial<NdaFormData>;
-  onFieldsChange: (patch: Partial<NdaFormData>) => void;
+  documentType: string;
+  documentName: string;
+  knownFields: Record<string, string | null | undefined>;
+  onFieldsChange: (patch: Record<string, string>) => void;
+  onCompleteChange: (isComplete: boolean) => void;
+  onSuggestedDocumentType: (documentType: string | null) => void;
 }) {
-  const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [
+    {
+      role: "assistant",
+      content:
+        `Hi! I'll help you put together ${article(documentName)} ${documentName}. Let's start with ` +
+        "the basics — who are the parties, and what's this agreement for?",
+    },
+  ]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Return focus to the message input once a reply (or error) has settled, so
+  // the user can keep typing without reaching for the mouse.
+  useEffect(() => {
+    if (!isSending) inputRef.current?.focus();
+  }, [isSending]);
 
   async function submitHistory(history: ChatMessage[]) {
     setIsSending(true);
     setError(null);
     try {
-      const result = await sendChatMessage(history, knownFields);
+      const result = await sendChatMessage(documentType, history, knownFields);
       onFieldsChange(result.fields);
+      onCompleteChange(result.isComplete);
+      onSuggestedDocumentType(result.suggestedDocumentType);
       setMessages([...history, { role: "assistant", content: result.reply }]);
     } catch (err) {
       setError(
@@ -82,6 +102,7 @@ export function ChatPanel({
         className="flex gap-2 border-t border-slate-200 p-4"
       >
         <input
+          ref={inputRef}
           aria-label="Your message"
           className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
           placeholder="Type your answer…"
