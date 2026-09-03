@@ -1,8 +1,6 @@
 # prelegal
 A platform for drafting common legal agreements
 
-**Status:** 🚧 In progress — expected completion by 2026-08-28.
-
 ## Running locally
 
 Requires Docker with Compose V2 (`docker compose`, bundled with recent Docker Desktop).
